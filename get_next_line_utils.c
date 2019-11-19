@@ -33,6 +33,28 @@ t_gnl	*ft_lstnew(int fd, t_gnl **liste)
 	return (maillon);
 }
 
+void    rm_lst(int fd, t_gnl **lst)
+{
+    t_gnl   *maillon;
+
+	maillon = *lst;
+    if (maillon->fd == fd)
+    {
+        *lst = maillon->next;
+        free(maillon);
+    }
+    else
+    {
+        while (maillon->fd != fd)
+        {
+            tmp = maillon->next;
+            if (fd == maillon->fd)
+                return (maillon);
+            maillon = tmp;
+        }
+    }
+}
+
 /*              MAIN                */
 
 int     ft_strjoin_s(char **content, char *buffer)
@@ -58,7 +80,7 @@ int     ft_strjoin_s(char **content, char *buffer)
     while(buffer[++y])
         res[i + y] = buffer[y];
     res[i + y] = 0;
-    free(*content);
+    //free(*content);
     *content = res;
     return (0);
 }
@@ -75,8 +97,7 @@ int     ft_remove(char **current)
     y = 0;
     while ((*current)[i] != '\n')
         i++;
-    while ((*current)[i] == '\n')
-        i++;
+    i++;
     if(!(res = malloc((size - i + 1) * sizeof(char))))
 		return (-1);
     res[size - i] = 0;
@@ -105,10 +126,10 @@ int     ft_lecture(int fd, char *buffer, char **current)
 				lecture = 0;
 	if (lecture == 1)
 	{
-		if(!(res = read(fd, buffer, BUFFER_SIZE)))
+		if((res = read(fd, buffer, BUFFER_SIZE)) < 0)
 			return(-1);
 		if((ft_strjoin_s(current, buffer)) == -1)
-			return (-1);
+		    return (-1);
 	}
     return (res);
 }
@@ -126,6 +147,7 @@ int     ft_fill(char **line, char *current, int size)
 		(*line)[i] = current[i];
         i++;
     }
+    printf("line return :%s\n",*line);
     return (1);
 }
 

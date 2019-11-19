@@ -44,8 +44,6 @@ int		get_next_line(int fd, char **line)
 	if(!(current = recup_maillon(fd, &lst)))
 		return (-1);
 	res = gnl(fd, buffer, line, current);
-	printf("line return :%s\n",*line);
-	free(buffer);
 	return (res);
 }
 
@@ -56,11 +54,12 @@ int main()
 	int 	res;
 
 	res = 1;
-	if((fd = open("test", 'r')) == -1)
+	if((fd = open("bible", 'r')) == -1)
 		return (-1);
-	while (res != 0)
+	while (res  >0)
 	{
 		res = get_next_line(fd,&line);
+		//printf("[%d]line return :%s\n",res,line);
 	}
     return (0);
 }
