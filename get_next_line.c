@@ -1,65 +1,116 @@
+/* ************************************************************************** */
+/*                                                          LE - /            */
+/*                                                              /             */
+/*   get_next_line.c                                  .::    .:/ .      .::   */
+/*                                                 +:+:+   +:    +:  +:+:+    */
+/*   By: alidy <alidy@student.le-101.fr>            +:+   +:    +:    +:+     */
+/*                                                 #+#   #+    #+    #+#      */
+/*   Created: 2019/11/21 16:14:28 by alidy        #+#   ##    ##    #+#       */
+/*   Updated: 2019/11/21 19:56:06 by alidy       ###    #+. /#+    ###.fr     */
+/*                                                         /                  */
+/*                                                        /                   */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
-int		gnl(int fd, char *buffer, char **line, t_gnl *current)
+char	*ft_strjoin(char *s1, char s2[BUFFER_SIZE], int limit)
+{
+	int		size_s1;
+	int		size_s2;
+	char	*str;
+
+	size_s1 = ft_strlen(s1);
+	size_s2 = limit;
+	if (!(str = malloc((size_s1 + size_s2 + 1) * sizeof(char))))
+		return (0);
+	size_s1 = 0;
+	size_s2 = 0;
+	if (s1)
+		while (s1[size_s1])
+		{
+			str[size_s1] = s1[size_s1];
+			size_s1++;
+		}
+	while (s2[size_s2] && size_s2 < limit)
+	{
+		str[size_s1 + size_s2] = s2[size_s2];
+		size_s2++;
+	}
+	free(s1);
+	str[size_s1 + size_s2] = 0;
+	return (str);
+}
+
+char	*ft_strdup(char *s1)
 {
 	int		i;
-	int		res;
+	char	*s2;
 
 	i = 0;
-	if((res = ft_lecture(fd, buffer, &(current->content))) == -1)
-		return (-1);
-	while ((current->content)[i] && (current->content)[i] != '\n')
+	while (s1[i] && s1[i] != '\n')
 		i++;
-	if((current->content)[i] == '\n')
-	{
-		if(!(ft_fill(line, current->content, i)))
-			return (-1);
-		if ((current->content)[i])
-			if((ft_remove(&(current->content))) == -1)
-				return (-1);
-	}
-	else if ((current->content)[i] == 0 && res < BUFFER_SIZE)
-	{
-		if(!(ft_fill(line, current->content, i)))
-			return (-1);
+	if (!(s2 = (char *)malloc(sizeof(char) * (i + 1))))
 		return (0);
+	s2[i] = 0;
+	i = 0;
+	while (s1[i] && s1[i] != '\n')
+	{
+		s2[i] = s1[i];
+		i++;
 	}
-	else 
-		return(gnl(fd, buffer, line, current));
-	return (1);
+	return (s2);
+}
+
+char	*ft_remove(char *current)
+{
+	int		i;
+	int		y;
+	char	*res;
+	int		size;
+
+	i = 0;
+	size = ft_strlen(current);
+	y = 0;
+	while (current[i] != '\n')
+		i++;
+	i++;
+	if (!(res = malloc((size - i + 1) * sizeof(char))))
+		return (0);
+	res[size - i] = 0;
+	while (i + y < size)
+	{
+		res[y] = current[i + y];
+		y++;
+	}
+	free(current);
+	return (res);
 }
 
 int		get_next_line(int fd, char **line)
 {
-	static t_gnl	*lst;
-	t_gnl			*current;
-	char			*buffer;
+	static t_gnl	*list;
+	t_gnl			*temp;
+	char			buffer[BUFFER_SIZE];
 	int				res;
+	int				ok;
 
-	if (!fd || !line || BUFFER_SIZE < 1)
+	if (fd < 0 || !line || (res = BUFFER_SIZE) < 1
+	|| (!(temp = recup_maillon(fd, &list))))
 		return (-1);
-	if(!(buffer = malloc((BUFFER_SIZE + 1) * sizeof(char))))
-		return (-1);
-	buffer[BUFFER_SIZE] = 0;
-	if(!(current = recup_maillon(fd, &lst)))
-		return (-1);
-	res = gnl(fd, buffer, line, current);
-	return (res);
-}
-
-int main()
-{  
-    int		fd;
-	char	*line;
-	int 	res;
-
-	res = 1;
-	if((fd = open("bible", 'r')) == -1)
-		return (-1);
-	while (res  >0)
+	while (!(ok = ft_strchr(temp->content, '\n')) && res == BUFFER_SIZE)
 	{
-		res = get_next_line(fd,&line);
-		//printf("[%d]line return :%s\n",res,line);
+		if ((res = read(fd, buffer, BUFFER_SIZE)) < 0
+		|| (!(temp->content = ft_strjoin(temp->content, buffer, res))))
+			return (-1);
 	}
-    return (0);
+	if (!(*line = ft_strdup(temp->content)))
+		return (-1);
+	if (res < BUFFER_SIZE && !ok)
+	{
+		rm_lst(fd, &list);
+		return (0);
+	}
+	if ((temp->content = ft_remove(temp->content)) == 0)
+		return (-1);
+	return (1);
 }

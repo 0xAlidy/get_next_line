@@ -1,23 +1,34 @@
-#include "get_next_line.h"
+/* ************************************************************************** */
+/*                                                          LE - /            */
+/*                                                              /             */
+/*   get_next_line_utils.c                            .::    .:/ .      .::   */
+/*                                                 +:+:+   +:    +:  +:+:+    */
+/*   By: alidy <alidy@student.le-101.fr>            +:+   +:    +:    +:+     */
+/*                                                 #+#   #+    #+    #+#      */
+/*   Created: 2019/11/21 16:14:42 by alidy        #+#   ##    ##    #+#       */
+/*   Updated: 2019/11/21 19:45:45 by alidy       ###    #+. /#+    ###.fr     */
+/*                                                         /                  */
+/*                                                        /                   */
+/* ************************************************************************** */
 
-/*              Liste               */
+#include "get_next_line.h"
 
 t_gnl	*recup_maillon(int fd, t_gnl **liste)
 {
-    t_gnl   *maillon;
-    t_gnl   *tmp;
+	t_gnl	*maillon;
+	t_gnl	*tmp;
 
 	maillon = *liste;
-    if (maillon)
-        while (maillon)
-        {
-            tmp = maillon->next;
-            if (fd == maillon->fd)
-                return (maillon);
-            maillon = tmp;
-        }
+	if (maillon)
+		while (maillon)
+		{
+			tmp = maillon->next;
+			if (fd == maillon->fd)
+				return (maillon);
+			maillon = tmp;
+		}
 	maillon = ft_lstnew(fd, liste);
-    return (maillon);
+	return (maillon);
 }
 
 t_gnl	*ft_lstnew(int fd, t_gnl **liste)
@@ -29,138 +40,49 @@ t_gnl	*ft_lstnew(int fd, t_gnl **liste)
 	maillon->fd = fd;
 	maillon->content = 0;
 	maillon->next = *liste;
-    *liste = maillon;
+	*liste = maillon;
 	return (maillon);
 }
 
-void    rm_lst(int fd, t_gnl **lst)
+int		rm_lst(int fd, t_gnl **lst)
 {
-    t_gnl   *maillon;
+	t_gnl	*maillon;
 
 	maillon = *lst;
-    if (maillon->fd == fd)
-    {
-        *lst = maillon->next;
-        free(maillon);
-    }
-    else
-    {
-        while (maillon->fd != fd)
-        {
-            tmp = maillon->next;
-            if (fd == maillon->fd)
-                return (maillon);
-            maillon = tmp;
-        }
-    }
-}
-
-/*              MAIN                */
-
-int     ft_strjoin_s(char **content, char *buffer)
-{
-    int     size_r;
-    int     size_b;
-    int     i;
-    int     y;
-    char    *res;
-
-    size_r = ft_strlen(*content);
-    size_b = ft_strlen(buffer);
-    i = 0;
-    y = -1;
-  	if(!(res = malloc((size_r + size_b + 1) * sizeof(char))))
-		return (-1);
-    if (*content)
-        while((*content)[i])
-        {
-            res[i] = (*content)[i];
-            i++;
-        }
-    while(buffer[++y])
-        res[i + y] = buffer[y];
-    res[i + y] = 0;
-    //free(*content);
-    *content = res;
-    return (0);
-}
-
-int     ft_remove(char **current)
-{
-    int     i;
-    int     y;
-    char    *res;
-    int     size;
-
-    i = 0;
-    size = ft_strlen(*current);
-    y = 0;
-    while ((*current)[i] != '\n')
-        i++;
-    i++;
-    if(!(res = malloc((size - i + 1) * sizeof(char))))
-		return (-1);
-    res[size - i] = 0;
-    while (i + y < size)
-    {
-        res[y] = (*current)[i + y];
-        y++; 
-    }
-    free(*current);
-    *current = res;
-    return (0);
-}
-
-int     ft_lecture(int fd, char *buffer, char **current)
-{
-    int				i;
-	int				lecture;
-    int             res;
-
-	i = -1;
-	lecture = 1;
-    res = BUFFER_SIZE;
-	if (*current)
-		while((*current)[++i])
-			if ((*current)[i] == '\n')
-				lecture = 0;
-	if (lecture == 1)
+	if (maillon->fd == fd)
 	{
-		if((res = read(fd, buffer, BUFFER_SIZE)) < 0)
-			return(-1);
-		if((ft_strjoin_s(current, buffer)) == -1)
-		    return (-1);
+		*lst = maillon->next;
+		free(maillon);
+		return (0);
 	}
-    return (res);
+	else
+		return (rm_lst(fd, &(maillon->next)));
 }
 
-int     ft_fill(char **line, char *current, int size)
-{
-    int i;
-
-    i = 0;
-    if(!(*line = malloc(size * sizeof(char))))
-			return (-1);
-	(*line)[size] = 0; 
-	while (current[i] && current[i] != '\n')
-    {
-		(*line)[i] = current[i];
-        i++;
-    }
-    printf("line return :%s\n",*line);
-    return (1);
-}
-
-
-int		ft_strlen(char *str)
+int		ft_strchr(char *s, int c)
 {
 	int i;
 
 	i = 0;
-    if (str)
-    {
-        while(str[i])
-		    i++;
-    }
+	if (s)
+		while (s[i])
+		{
+			if (s[i] == c)
+				return (1);
+			i++;
+		}
+	return (0);
+}
+
+int		ft_strlen(char *s)
+{
+	int	i;
+
+	i = 0;
+	if (s)
+	{
+		while (s[i])
+			i++;
+	}
 	return (i);
 }
