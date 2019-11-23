@@ -6,14 +6,14 @@
 /*   By: alidy <alidy@student.le-101.fr>            +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2019/11/21 16:14:28 by alidy        #+#   ##    ##    #+#       */
-/*   Updated: 2019/11/21 19:56:06 by alidy       ###    #+. /#+    ###.fr     */
+/*   Updated: 2019/11/23 14:35:40 by alidy       ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strjoin(char *s1, char s2[BUFFER_SIZE], int limit)
+char	*ft_strjoin(char *s1, char *s2, int limit)
 {
 	int		size_s1;
 	int		size_s2;
@@ -23,6 +23,7 @@ char	*ft_strjoin(char *s1, char s2[BUFFER_SIZE], int limit)
 	size_s2 = limit;
 	if (!(str = malloc((size_s1 + size_s2 + 1) * sizeof(char))))
 		return (0);
+	str[size_s1 + size_s2] = 0;
 	size_s1 = 0;
 	size_s2 = 0;
 	if (s1)
@@ -37,7 +38,6 @@ char	*ft_strjoin(char *s1, char s2[BUFFER_SIZE], int limit)
 		size_s2++;
 	}
 	free(s1);
-	str[size_s1 + size_s2] = 0;
 	return (str);
 }
 
@@ -90,7 +90,7 @@ int		get_next_line(int fd, char **line)
 {
 	static t_gnl	*list;
 	t_gnl			*temp;
-	char			buffer[BUFFER_SIZE];
+	char			buffer[BUFFER_SIZE + 1];
 	int				res;
 	int				ok;
 

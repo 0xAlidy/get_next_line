@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.le-101.fr>            +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2019/11/21 16:14:42 by alidy        #+#   ##    ##    #+#       */
-/*   Updated: 2019/11/21 19:45:45 by alidy       ###    #+. /#+    ###.fr     */
+/*   Updated: 2019/11/23 14:35:20 by alidy       ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -47,16 +47,24 @@ t_gnl	*ft_lstnew(int fd, t_gnl **liste)
 int		rm_lst(int fd, t_gnl **lst)
 {
 	t_gnl	*maillon;
+	t_gnl	*temp;
 
 	maillon = *lst;
+	temp = 0;
 	if (maillon->fd == fd)
 	{
 		*lst = maillon->next;
+		free(maillon->content);
 		free(maillon);
 		return (0);
 	}
-	else
-		return (rm_lst(fd, &(maillon->next)));
+	while ((maillon->next)->fd != fd)
+		maillon = (*lst)->next;
+	temp = maillon->next;
+	maillon->next = (maillon->next)->next;
+	free(temp->content);
+	free(temp);
+	return (0);
 }
 
 int		ft_strchr(char *s, int c)
