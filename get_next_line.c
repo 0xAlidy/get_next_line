@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.le-101.fr>            +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2019/11/21 16:14:28 by alidy        #+#   ##    ##    #+#       */
-/*   Updated: 2019/11/23 14:35:40 by alidy       ###    #+. /#+    ###.fr     */
+/*   Updated: 2019/11/25 16:52:41 by alidy       ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -94,7 +94,7 @@ int		get_next_line(int fd, char **line)
 	int				res;
 	int				ok;
 
-	if (fd < 0 || !line || (res = BUFFER_SIZE) < 1
+	if (!line || (res = BUFFER_SIZE) < 1 || read(fd, buffer, 0) < 0
 	|| (!(temp = recup_maillon(fd, &list))))
 		return (-1);
 	while (!(ok = ft_strchr(temp->content, '\n')) && res == BUFFER_SIZE)
